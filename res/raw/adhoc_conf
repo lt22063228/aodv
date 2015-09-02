@@ -1,0 +1,14 @@
+device.type=nexusone
+adhoc.mode=wifi
+wifi.interface=eth0
+wifi.essid=AdHoc
+wifi.channel=2
+wifi.encryption=wep
+wifi.encryption.key=none
+wifi.driver=wext
+wifi.setup=iwconfig
+wifi.encryption.key=none
+ip.gateway=192.168.2.1
+ip.netmask=255.255.255.0
+ip.network=192.168.2.0
+

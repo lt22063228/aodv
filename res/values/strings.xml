@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">AdHoc</string>
+	<string name="fresh">刷新</string>
+	<string name="stop">stop</string>
+    <string name="main_activity_start">Start AdHoc</string>
+    <string name="main_activity_start_summary">Please wait while starting...</string>
+    <string name="main_activity_stop">Stop AdHoc</string>
+    <string name="main_activity_stop_summary">Please wait while stopping...</string> 
+</resources>

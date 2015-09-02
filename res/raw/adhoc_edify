@@ -1,0 +1,82 @@
+# This script controls actions to be taken when the tethering is started or stopped.
+# @Version=94
+# ------------------------------------------------------------------------------------
+# It uses the "edify" language, which is also used for the android OTA update scripts. 
+# See:
+# http://android.git.kernel.org/?p=platform/bootable/recovery.git;a=tree;f=edify;h=04720f8aaa9a5e0079b79f8be7f11b7f74414162;hb=HEAD
+# ------------------------------------------------------------------------------------
+
+#
+# Actions for starting AdHoc
+#
+action() == "start" && (
+  #
+  # Set "status"-Property
+  #
+  setprop("adhoc.status","running");
+    
+  getcfg("device.type") == "generic" && (
+    #
+    # Generic device
+    # 
+    log(load_wifi(), "Loading WiFi driver");
+      
+    #
+    # Bring up wifi interface
+    #
+    log(run_program("/data/data/adhoc.setup/bin/ifconfig " + getcfg("wifi.interface") + " " + getcfg("ip.network") + " netmask " + getcfg("ip.netmask")) &&
+                run_program("/data/data/adhoc.setup/bin/ifconfig " + getcfg("wifi.interface") + " up"),  "Activating WiFi interface");
+    log(run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " mode ad-hoc"), "Setting ad-hoc mode");
+    log(run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " essid " + getcfg("wifi.essid")), "Setting essid");
+    log(run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " channel " + getcfg("wifi.channel")), "Setting channel");
+    log(run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " rate " + "11M"), "Setting rate");     
+    run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " commit");
+  );
+  #
+  # WEP-Encryption
+  #
+  getcfg("wifi.encryption") == "wep" && (
+    getcfg("wifi.setup") == "iwconfig" && (      	
+      log(run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " key s:"+getcfg("wifi.encryption.key")+"") &&
+        run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " key restricted"), "Activating encryption<br/>(iwconfig)");
+      run_program("/data/data/adhoc.setup/bin/iwconfig " + getcfg("wifi.interface") + " commit");
+    );
+  );
+  log("AdHoc now running");
+);
+
+#
+# Actions when stopping AdHoc
+#
+action() == "stop" && (
+  #
+  # Set "status"-Property
+  #
+  setprop("adhoc.status","stopped");
+
+  run_program("/data/data/adhoc.setup/bin/ifconfig " +  getcfg("wifi.interface") + " down");
+    
+  getcfg("device.type") == "generic" && (
+    unload_wifi();
+  );
+  
+  log("AdHoc now stopped");
+);
+
+#
+# Actions when restart AdHoc
+#
+action() == "restart" && (
+    
+   getcfg("device.type") == "generic" && (
+        
+
+     #
+     # Bring up wifi interface
+     #
+     run_program("/data/data/adhoc.setup/bin/ifconfig " + getcfg("wifi.interface") + " " + getcfg("ip.network") + " netmask " + getcfg("ip.netmask"));
+
+  );
+
+  log("AdHoc restart finished");
+);
